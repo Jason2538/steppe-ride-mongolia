@@ -15,6 +15,7 @@ const mime = {
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
   '.hdr': 'application/octet-stream',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
 };
 const port = Number(process.env.PORT) || 5173;
 http.createServer(async (req, res) => {

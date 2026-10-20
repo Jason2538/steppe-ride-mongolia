@@ -13,8 +13,31 @@ let sceneryTime = 0, car, previousBiome = 'steppe';
 const cameraPosition = new T.Vector3(), cameraTarget = new T.Vector3(), lookAt = new T.Vector3(), bikePosition = new T.Vector3();
 const viewNames = () => sim.vehicle === 'car' ? ['뒤에서', '운전석', '보닛', '넓게'] : ['뒤에서', '헬멧', '핸들바', '넓게'];
 const BIOME_NAMES = { steppe: '몽골의 초원', gobi: '고비 모래·자갈 지대', lake: '초원 호숫가' };
-const config = { quality: matchMedia('(pointer:coarse)').matches ? 'low' : 'ultra' };
-let steeringPointer = null, dragStart = 0, dragSteer = 0;
+const isCoarse = matchMedia('(pointer:coarse)').matches;
+const isTablet = isCoarse && Math.min(window.innerWidth, window.innerHeight) >= 600;
+const config = { quality: isCoarse ? (isTablet ? 'medium' : 'low') : 'ultra' };
+let steeringPointer = null, dragStart = 0, dragSteer = 0, tiltEnabled = false, tiltSteer = 0, wakeLock = null, deferredInstallPrompt = null;
+
+function haptic(ms = 12) {
+  if (shake && typeof navigator.vibrate === 'function') {
+    try { navigator.vibrate(ms); } catch {}
+  }
+}
+async function requestWakeLock() {
+  if (!('wakeLock' in navigator) || document.hidden || !started || paused) return;
+  try {
+    if (!wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch {}
+}
+function releaseWakeLock() {
+  if (wakeLock) {
+    try { wakeLock.release(); } catch {}
+    wakeLock = null;
+  }
+}
 
 function toast(message) {
   $('toast').textContent = message;
@@ -52,6 +75,8 @@ function setPause(value, dialog = true) {
   paused = value;
   clearInput();
   accumulator = 0;
+  if (value) releaseWakeLock();
+  else requestWakeLock();
   if (value && dialog && !$('pauseDialog').open) $('pauseDialog').showModal();
   if (!value && $('pauseDialog').open) $('pauseDialog').close();
   $('pauseButton').setAttribute('aria-label', paused ? '주행 재개' : '일시정지');
@@ -73,6 +98,7 @@ function saveSettings() {
       view,
       assist: sim.assist,
       shake,
+      tilt: tiltEnabled,
       hud: $('hudToggle').checked,
       engine: audio.engineVolume,
       wind: audio.windVolume,
@@ -90,6 +116,7 @@ function loadSettings() {
     if (Number.isInteger(data.view) && data.view >= 0 && data.view < 4) view = data.view;
     if (typeof data.assist === 'boolean') sim.assist = data.assist;
     if (typeof data.shake === 'boolean') shake = data.shake;
+    if (typeof data.tilt === 'boolean') tiltEnabled = data.tilt;
     if (typeof data.hud === 'boolean') $('hudToggle').checked = data.hud;
     if (Number.isFinite(data.engine)) audio.engineVolume = clamp(data.engine, 0, 1);
     if (Number.isFinite(data.wind)) audio.windVolume = clamp(data.wind, 0, 1);
@@ -159,6 +186,7 @@ function init() {
 
   $('quality').value = config.quality;
   $('shakeToggle').checked = shake;
+  if ($('tiltToggle')) $('tiltToggle').checked = tiltEnabled;
   $('assistToggle').checked = sim.assist;
   $('engineVolume').value = audio.engineVolume * 100;
   $('windVolume').value = audio.windVolume * 100;
@@ -187,6 +215,7 @@ function init() {
       vehicle: sim.vehicle,
       view,
       quality: config.quality,
+      tilt: tiltEnabled,
       chunks: world.chunks.size,
       created: world.stats.created,
       disposed: world.stats.disposed,
@@ -206,11 +235,11 @@ function init() {
       updateUI();
       renderer.render(scene, camera);
     },
-    version: '1.3.0',
+    version: '1.4.0',
   };
 }
 function readInput() {
-  let steer = (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) - (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) + touch.left - touch.right + dragSteer;
+  let steer = (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0) - (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) + touch.left - touch.right + dragSteer + (tiltEnabled ? tiltSteer : 0);
   let throttle = (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0) || touch.throttle;
   let brake = (keys.has('KeyS') || keys.has('ArrowDown') || keys.has('Space') ? 1 : 0) || touch.brake;
   try {
@@ -365,12 +394,14 @@ function frame(now) {
 async function start() {
   if (started) return;
   started = true;
+  haptic(18);
   setMode($('startMode').value);
   $('welcome').classList.add('hidden');
   $('chapter').classList.add('hidden');
   $('rideUI').classList.remove('hidden');
   document.body.classList.add('started');
   positionScene(1, true);
+  requestWakeLock();
   try {
     await audio.init();
   } catch {
@@ -390,6 +421,7 @@ function syncVehicleUI() {
 function setVehicle(type) {
   if (type === sim.vehicle) return;
   clearInput();
+  haptic(15);
   sim.setVehicle(type);
   syncVehicleUI();
   positionScene(1, true);
@@ -399,12 +431,23 @@ function setVehicle(type) {
 }
 function setView(value) {
   view = value;
+  haptic(10);
   syncVehicleUI();
   positionScene(1, true);
   saveSettings();
   if (started) toast(`시점 · ${viewNames()[view]}`);
 }
 function changeView() { setView((view + 1) % 4); }
+
+async function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+    else toast('이 브라우저에서는 전체 화면 버튼을 지원하지 않아요.');
+  } catch {
+    toast('브라우저에서 전체 화면을 허용하지 않았어요.');
+  }
+}
 
 $('startButton').addEventListener('click', start);
 $('cameraSelect').addEventListener('change', e => setView(Number(e.target.value)));
@@ -438,6 +481,27 @@ $('quality').addEventListener('change', e => {
   toast('그래픽 품질을 변경했습니다.');
 });
 $('rideMode').addEventListener('change', e => setMode(e.target.value));
+if ($('tiltToggle')) {
+  $('tiltToggle').addEventListener('change', async e => {
+    if (e.target.checked && typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const perm = await DeviceOrientationEvent.requestPermission();
+        if (perm !== 'granted') {
+          e.target.checked = false;
+          toast('기기 기울기 센서 권한이 허용되지 않았어요.');
+          return;
+        }
+      } catch {
+        e.target.checked = false;
+        return;
+      }
+    }
+    tiltEnabled = e.target.checked;
+    tiltSteer = 0;
+    saveSettings();
+    toast(tiltEnabled ? '기기 기울이기 조향을 켰어요. 좌우로 기울여 보세요.' : '기기 기울이기 조향을 껐어요.');
+  });
+}
 $('hudToggle').addEventListener('change', e => {
   document.body.classList.toggle('hud-off', !e.target.checked);
   saveSettings();
@@ -451,22 +515,45 @@ $('resetButton').addEventListener('click', () => {
   toast('오른쪽 차로로 돌아왔습니다.');
   $('settingsDialog').close();
 });
-$('fullscreenButton').addEventListener('click', async () => {
-  try {
-    if (document.fullscreenElement) await document.exitFullscreen();
-    else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-    else toast('이 브라우저에서는 전체 화면 버튼을 지원하지 않아요.');
-  } catch {
-    toast('브라우저에서 전체 화면을 허용하지 않았어요.');
-  }
+$('fullscreenButton').addEventListener('click', toggleFullscreen);
+if ($('quickFullscreen')) $('quickFullscreen').addEventListener('click', toggleFullscreen);
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if ($('installAppButton')) $('installAppButton').classList.remove('hidden');
 });
+if ($('installAppButton')) {
+  $('installAppButton').addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    try { await deferredInstallPrompt.userChoice; } catch {}
+    deferredInstallPrompt = null;
+    $('installAppButton').classList.add('hidden');
+  });
+}
+
+window.addEventListener('deviceorientation', e => {
+  if (!tiltEnabled || paused || !started) {
+    tiltSteer = 0;
+    return;
+  }
+  const angle = screen.orientation?.angle ?? window.orientation ?? 0;
+  let deg = e.gamma || 0;
+  if (angle === 90) deg = e.beta || 0;
+  else if (angle === -90 || angle === 270) deg = -(e.beta || 0);
+  if (Math.abs(deg) < 2.2) tiltSteer = 0;
+  else tiltSteer = clamp(-deg / 24, -1, 1);
+});
+
 document.querySelectorAll('[data-cruise]').forEach(b => b.addEventListener('click', () => {
   if (!started) return;
+  haptic(14);
   sim.cruise = Number(b.dataset.cruise);
   updateCruise();
   toast(`${sim.cruise} km/h로 천천히 맞춥니다. 제동하면 해제됩니다.`);
 }));
-$('cruiseOff').addEventListener('click', () => { sim.cruise = 0; updateCruise(); });
+$('cruiseOff').addEventListener('click', () => { haptic(10); sim.cruise = 0; updateCruise(); });
 
 window.addEventListener('keydown', e => {
   if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName) || $('settingsDialog').open) return;
@@ -488,6 +575,7 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden && started) {
     setPause(true, false);
     audio.update(sim, false);
+    releaseWakeLock();
   }
 });
 window.addEventListener('focus', () => {
@@ -497,6 +585,7 @@ document.querySelectorAll('[data-input]').forEach(button => {
   button.addEventListener('pointerdown', e => {
     e.preventDefault();
     if (paused) return;
+    haptic(10);
     button.setPointerCapture(e.pointerId);
     touch[button.dataset.input] = 1;
     button.classList.add('held');
@@ -507,20 +596,22 @@ document.querySelectorAll('[data-input]').forEach(button => {
   };
   for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(event, release);
 });
-// Mouse / pen dragging on the landscape steers. Touch uses independent multi-touch buttons.
+// Touch / mouse / pen dragging on the open landscape smoothly steers analog-style.
 $('scene').addEventListener('pointerdown', e => {
-  if (!started || paused || e.pointerType === 'touch') return;
+  if (!started || paused || steeringPointer !== null) return;
   steeringPointer = e.pointerId;
   dragStart = e.clientX;
-  $('scene').setPointerCapture(e.pointerId);
+  try { $('scene').setPointerCapture(e.pointerId); } catch {}
 });
 $('scene').addEventListener('pointermove', e => {
-  if (e.pointerId === steeringPointer) dragSteer = clamp((dragStart - e.clientX) / 160, -1, 1);
+  if (e.pointerId === steeringPointer) dragSteer = clamp((dragStart - e.clientX) / 135, -1, 1);
 });
 for (const event of ['pointerup', 'pointercancel', 'lostpointercapture']) {
-  $('scene').addEventListener(event, () => {
-    steeringPointer = null;
-    dragSteer = 0;
+  $('scene').addEventListener(event, e => {
+    if (steeringPointer === null || e.pointerId === steeringPointer) {
+      steeringPointer = null;
+      dragSteer = 0;
+    }
   });
 }
 $('scene').addEventListener('webglcontextlost', e => {
@@ -529,6 +620,11 @@ $('scene').addEventListener('webglcontextlost', e => {
   error('3D 그래픽 연결이 중단됐습니다. 다른 탭을 닫거나 품질을 낮춘 뒤 다시 시작해 주세요.');
 });
 window.addEventListener('resize', resize);
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
 try {
   init();
 } catch (err) {
