@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#314c37">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="몽골에서 영감을 받은 끝없는 초원과 사막, 호수 길. 안드로이드 스마트폰·태블릿·PC에서 오토바이와 자동차로 즐기는 싱글 플레이 여행.">
+  <title>STEPPE — 길이 이끄는 대로</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./assets/icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css?v=1.4">
+</head>
+<body>
+  <canvas id="scene" aria-label="몽골에서 영감을 받은 초원 차량 주행 화면"></canvas>
+  <div id="vignette" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="STEPPE 처음으로"><svg viewBox="0 0 38 28" aria-hidden="true"><path d="M2 23 13 8l6 8 7-12 10 19M13 8l3 15M26 4l-4 19"/></svg><span>STEPPE<small>THE OPEN ROAD</small></span></a>
+    <div class="location"><span class="live-dot"></span> <span id="biomeLabel">몽골의 초원</span> <span class="divider">/</span> <span class="subtle">가상 여행</span></div>
+    <nav class="tools" aria-label="게임 도구">
+      <button id="installAppButton" class="pill-button hidden" aria-label="앱 설치" title="스마트폰·태블릿에 앱으로 설치">앱 설치</button>
+      <button id="quickFullscreen" class="icon-button" aria-label="전체 화면" title="전체 화면">⛶</button>
+      <button id="soundToggle" class="icon-button" aria-label="소리 켜기" title="소리 켜기">♪</button>
+      <button id="settingsButton" class="icon-button" aria-label="설정" title="설정"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></button>
+      <button id="pauseButton" class="icon-button" aria-label="일시정지" title="일시정지 · P"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+    </nav>
+  </header>
+
+  <main id="welcome" class="welcome">
+    <div class="eyebrow"><span class="short-line"></span> A LITTLE FURTHER, A LITTLE FREER</div>
+    <h1>길이 이끄는<br>대로<span>.</span></h1>
+    <p class="intro">끝없이 펼쳐진 하늘, 바람이 지나는 초원과 고비의 길.<br>스마트폰·태블릿·PC 어디서든 당신의 속도로 달려보세요.</p>
+    <div class="start-options"><div class="start-pair"><label for="startVehicle">함께할 차량</label><select id="startVehicle"><option value="bike">오토바이</option><option value="car">자동차 · 탐험 왜건</option></select></div><div class="start-pair"><label for="startMode">오늘의 주행</label><select id="startMode"><option value="tour">관광 · 최대 100 km/h</option><option value="speed">스피드 · 최대 180 km/h</option></select></div></div>
+    <button id="startButton" class="primary">초원으로 출발 <span>↗</span></button>
+    <div class="welcome-foot"><span>스마트폰 · 태블릿 터치 최적화</span><span>설치 없이 바로 주행</span></div>
+    <div class="welcome-note">몽골에서 영감을 받은 가상의 길입니다.</div>
+  </main>
+
+  <aside class="chapter" id="chapter"><span class="eyebrow">01 / THE GRASSLANDS</span><h2>바람이 머무는 곳</h2><p>넓은 하늘 아래, 길은 계속됩니다.</p></aside>
+
+  <div id="rideUI" class="ride-ui hidden">
+    <section id="hud" class="hud" aria-label="주행 계기판">
+      <div class="hud-top"><span class="live-dot"></span><span id="modeLabel">관광 모드</span><span id="fps" class="fps"></span></div>
+      <div class="speedline"><span id="speed">0</span><div class="speedunit">km/h<br><span>현재 속도</span></div><div class="gear"><small>GEAR</small><strong id="gear">N</strong></div></div>
+      <div class="rpm-track"><div id="rpmFill"></div><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="rpm-label"><span><b id="rpm">1,200</b> RPM</span><span id="surface">포장도로</span></div>
+      <div class="hud-bottom"><span><b id="distance">0.00</b> km</span><span><span id="leanLabel">린</span> <b id="lean">0</b>°</span></div>
+    </section>
+    <section class="cruise" id="cruisePanel" aria-label="크루즈 컨트롤"><div class="cruise-heading"><span id="cruiseStatus">나만의 속도로</span><button id="cruiseOff" title="크루즈 해제">수동</button></div><div class="cruise-speeds"><button data-cruise="40">40</button><button data-cruise="60">60</button><button data-cruise="80">80</button><button data-cruise="100">100</button><small>km/h</small></div></section>
+    <div class="keyboard-help"><span>W/S 가속·제동</span><span>A/D 조향</span><span>V 차량</span><span>C 시점</span><span>P 정지</span></div>
+    <div class="touch-controls">
+      <div class="touch-steer">
+        <button data-input="left" aria-label="왼쪽 조향">‹</button>
+        <button data-input="right" aria-label="오른쪽 조향">›</button>
+      </div>
+      <div class="touch-pedals">
+        <button data-input="brake" class="brake" aria-label="브레이크">제동</button>
+        <button data-input="throttle" class="throttle" aria-label="가속">가속 <span>↑</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="ride-switches" aria-label="차량과 카메라 선택"><label>차량<select id="vehicleSelect" title="차량 변경 · V"><option value="bike">오토바이</option><option value="car">자동차</option></select></label><label>시점<select id="cameraSelect" title="시점 전환 · C"><option value="0">뒤에서</option><option value="1">헬멧</option><option value="2">핸들바</option><option value="3">넓게</option></select></label></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="orientationHint" class="orientation-hint">↻ 가로로 돌리거나 전체 화면(⛶)을 누르면 더 넓게 달릴 수 있어요</div>
+
+  <dialog id="settingsDialog">
+    <div class="dialog-head"><div><span class="eyebrow">MAKE IT YOURS</span><h2>여행 설정</h2></div><button class="close-button" data-close="settingsDialog" aria-label="설정 닫기">×</button></div>
+    <div class="setting"><label for="quality">그래픽 품질<small>태블릿은 중간, PC는 최상이 기본입니다. 기기에 맞춰 조절해 보세요.</small></label><select id="quality"><option value="low">낮음</option><option value="medium">중간</option><option value="high">높음</option><option value="ultra" selected>최상</option></select></div>
+    <div class="setting"><label for="rideMode">주행 모드</label><select id="rideMode"><option value="tour">관광 · 100 km/h</option><option value="speed">스피드 · 180 km/h</option></select></div>
+    <div class="setting"><label for="tiltToggle">기기 기울이기 조향<small>스마트폰·태블릿을 좌우로 기울여 핸들처럼 조향합니다.</small></label><input id="tiltToggle" type="checkbox"></div>
+    <div class="setting"><label for="hudToggle">계기판 표시</label><input id="hudToggle" type="checkbox" checked></div>
+    <div class="setting"><label for="shakeToggle">노면 진동 · 터치 햅틱</label><input id="shakeToggle" type="checkbox" checked></div>
+    <div class="setting"><label for="assistToggle">차로 유지 보조<small>조향하지 않을 때 오른쪽 차로로 천천히 정렬합니다.</small></label><input id="assistToggle" type="checkbox" checked></div>
+    <div class="setting"><label for="fpsToggle">성능 표시</label><input id="fpsToggle" type="checkbox"></div>
+    <div class="setting"><label for="engineVolume">엔진 소리</label><input id="engineVolume" type="range" min="0" max="100" value="35"></div>
+    <div class="setting"><label for="windVolume">바람 소리</label><input id="windVolume" type="range" min="0" max="100" value="45"></div>
+    <p class="setting-note">화면 빈 곳을 좌우로 드래그해도 부드럽게 조향됩니다. 브레이크를 누르면 크루즈가 해제됩니다.</p>
+    <div class="dialog-actions"><button id="resetButton" class="secondary">도로로 복귀</button><button id="fullscreenButton" class="secondary">전체 화면</button></div>
+    <a class="credits-link" href="./credits.html" target="_blank" rel="noopener">제작 정보 · 출처와 라이선스 ↗</a>
+  </dialog>
+  <dialog id="pauseDialog" class="pause-dialog"><span class="eyebrow">TAKE YOUR TIME</span><h2>잠시, 숨을 고르고.</h2><p>길은 여기서 기다리고 있어요.</p><button id="resumeButton" class="primary">다시 달리기 <span>→</span></button></dialog>
+  <div id="error" class="error hidden" role="alert"><h2>3D 화면을 시작하지 못했어요.</h2><p id="errorText">브라우저의 하드웨어 가속과 WebGL2 지원을 확인해 주세요.</p><button onclick="location.reload()">다시 시도</button></div>
+  <script type="module" src="./game.js?v=1.4"></script>
+</body>
+</html>

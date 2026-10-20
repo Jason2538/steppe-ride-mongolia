@@ -1,0 +1,50 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STEPPE · 제작 정보와 라이선스</title><style>body{margin:0;background:#f3f2e8;color:#2c4433;font:15px/1.85 Arial,'Malgun Gothic',sans-serif}main{max-width:940px;margin:auto;padding:50px 24px}h1{font:42px Georgia,serif;letter-spacing:4px}h2{font-size:20px;margin-top:40px}a{color:#42633e}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid #d3d9c6;padding:12px;text-align:left}pre{white-space:pre-wrap;background:#e7eadb;padding:20px;font-size:11px}.small{font-size:12px;color:#687b5d}@media(max-width:600px){table{font-size:11px}td,th{padding:8px}}</style></head><body><main>
+<a href="./">← 초원으로 돌아가기</a><h1>STEPPE</h1><p>몽골에서 영감을 받은 싱글 플레이 오픈 로드 라이딩 · 최상 그래픽·환경 업데이트 1.3</p>
+<p>도로와 지형은 수학식으로 생성한 가상 환경입니다. 실제 몽골의 특정 장소·도로를 재현한 지도는 아닙니다. 무료 사진 기반 PBR 재질(색상·노멀맵)과 하늘, 몽골 국기 SVG를 사용합니다. 하늘과 지면 사진 자료는 몽골 현장에서 촬영한 사진이 아닙니다. 실제 위성 지형 데이터(DEM), 상용 차량 디자인이나 외부 녹음 음원은 사용하지 않았습니다.</p>
+<h2>실제로 사용한 모든 자료</h2><table><thead><tr><th>자료</th><th>제작자 · 원본 링크</th><th>라이선스</th><th>수정 내용</th></tr></thead><tbody>
+<tr><td>Three.js 0.180.0 · HDRLoader</td><td>mrdoob 및 기여자 · <a href="https://github.com/mrdoob/three.js/tree/r180">Three.js r180</a></td><td>MIT · <a href="./vendor/THREE-LICENSE.txt">원문</a></td><td>HDRLoader 로컬 상대 경로 수정</td></tr>
+<tr><td>Sparse Grass · 색상/노멀</td><td>Amal Kumar · <a href="https://polyhaven.com/a/sparse_grass">Poly Haven</a></td><td><a href="https://polyhaven.com/license">CC0 1.0</a></td><td>1K JPEG 재압축, 셰이더 멀티스케일 블렌딩</td></tr>
+<tr><td>Asphalt 04 (포장도로) · 색상/노멀</td><td>Rob Tuytel · <a href="https://polyhaven.com/a/asphalt_04">Poly Haven</a></td><td>CC0 1.0</td><td>1K JPEG 재압축</td></tr>
+<tr><td>Asphalt 02 (갈라진 도로) · 색상/노멀</td><td>Rob Tuytel · <a href="https://polyhaven.com/a/asphalt_02">Poly Haven</a></td><td>CC0 1.0</td><td>1K JPEG 재압축</td></tr>
+<tr><td>Gravel Road (비포장 자갈길) · 색상/노멀</td><td>Rob Tuytel · <a href="https://polyhaven.com/a/gravel_road">Poly Haven</a></td><td>CC0 1.0</td><td>1K JPEG 재압축</td></tr>
+<tr><td>Dirt Floor (비포장 흙길) · 색상/노멀</td><td>Rob Tuytel · <a href="https://polyhaven.com/a/dirt_floor">Poly Haven</a></td><td>CC0 1.0</td><td>1K JPEG 재압축</td></tr>
+<tr><td>Sandy Gravel 02 (길어깨/모래자갈) · 색상/노멀</td><td>Rob Tuytel · <a href="https://polyhaven.com/a/sandy_gravel_02">Poly Haven</a></td><td>CC0 1.0</td><td>1K JPEG 재압축</td></tr>
+<tr><td>Aerial Grass Rock · 색상/노멀</td><td>Rob Tuytel · <a href="https://polyhaven.com/a/aerial_grass_rock">Poly Haven</a></td><td>CC0 1.0</td><td>1K JPEG 재압축 (예비 지형 텍스처)</td></tr>
+<tr><td>Kloofendal 48d Partly Cloudy (Pure Sky)</td><td>Greg Zaal, Jarod Guest · <a href="https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky">Poly Haven</a></td><td>CC0 1.0</td><td>배경 4K JPEG 축소·재압축, 환경광 반사 1K HDR</td></tr>
+<tr><td>몽골 국기 SVG</td><td>Wikimedia Commons 기여자 · <a href="https://commons.wikimedia.org/wiki/File:Flag_of_Mongolia.svg">Flag of Mongolia.svg</a></td><td>Public Domain (PD-Mongolia-exempt)</td><td>원본 SVG 보존, 2:1 비율 펄럭이는 3D 천에 적용</td></tr>
+<tr><td>지형·도로·산맥·호수·대체 하늘</td><td>이 프로젝트에서 절차적으로 생성 (DEM 미사용)</td><td>프로젝트 원본 코드 · MIT</td><td>초원·고비 모래자갈·호숫가 구간 연속 보간</td></tr>
+<tr><td>오토바이·탐험 왜건 자동차·라이더·게르·오보·양·염소·말·쌍봉낙타·표지판·전신주</td><td>직접 구성한 원본 3D 모델 (차체 클리어코트 PBR, 실내 핸들·계기판·루프랙·스페어타이어·서스펜션, 염소 뿔·귀·수염·다리, 오보 돌무더기·하닥 포함)</td><td>프로젝트 원본 코드 · MIT</td><td>외부 3D 모델 미사용, 정적 소품 재질별 배칭 최적화</td></tr>
+<tr><td>표지판·털 요철·대체 재질</td><td>Canvas 2D와 수학적 노이즈로 직접 생성</td><td>프로젝트 원본 코드 · MIT</td><td>키릴 문자 거리 표지판 및 제한속도 표지판 절차적 생성</td></tr>
+<tr><td>엔진음·바람음·노면 주행음</td><td>Web Audio API 발진기와 필터링된 노이즈로 실시간 합성</td><td>프로젝트 원본 코드 · MIT</td><td>외부 녹음 음원·배경음악 미사용</td></tr>
+<tr><td>아이콘·로고·글꼴</td><td>프로젝트 자체 SVG 및 운영체제 기본 글꼴</td><td>프로젝트 원본 코드 · MIT / OS 기본 글꼴</td><td>별도 폰트 파일 미배포</td></tr>
+</tbody></table>
+<h2>설계 참고 자료</h2><p>아래 자료는 원리와 치수 조사에 참고했습니다. 해당 게임의 코드나 에셋을 복사하지 않았습니다.</p><ul>
+<li><a href="https://web.dev/case-studies/slow-roads">Slow Roads 개발자 기술 설명</a>: 도로 주변 정밀도 집중, 청크와 메모리 재사용.</li>
+<li><a href="https://ride5.ridevideogame.com/ride-5-and-the-importance-of-physics-in-turning-numbers-into-emotions/">RIDE 5 물리 개발 글</a>: 타이어 접지력과 라이더의 상호작용.</li>
+<li><a href="https://legalinfo.mn/en/edtl/16758728204231">몽골 도로교통안전법 제4.4조</a>: 우측통행.</li>
+<li><a href="https://openjicareport.jica.go.jp/pdf/11785508_01.pdf#page=41">JICA 몽골 동부 간선도로 기본설계, 2005, 인쇄 쪽수 2-14</a>: 차로당 3.5m 사례. 게임 포장 차도 폭은 약 7m이며, 전국 모든 도로의 최신 규격을 뜻하지 않습니다.</li>
+</ul>
+<h2>현재 구현 범위 (v1.3)</h2><p>낮음·중간·높음·최상(Ultra) 4단계 그래픽 품질(PC 기본 최상), 구간별 초원·고비 모래자갈·호숫가 지형 전환 및 포장·갈라진 도로·비포장 자갈길·흙길 노면 전환, 오토바이와 탐험 왜건 자동차 선택, 자동 기어, 차량별 가속·제동·접지·차체 기울임(린/롤), 차로 유지 보조, 짧은 도로 복귀, 차량별 4가지 고정 카메라, 키보드·마우스 드래그·화면 버튼·기본 게임패드 입력을 제공합니다. 시간·날씨 변화, 수동 변속과 앞뒤 브레이크 분리, 자유 카메라·사진 저장, 배경음악은 확장 범위입니다.</p>
+<h2>저장 및 연결</h2><p>설정만 이 브라우저의 localStorage에 저장합니다. 계정·순위표·통신형 게임 기능·게임 서버·분석 도구를 구현하지 않았습니다. 외부 게임 라이브러리도 배포 파일에 포함되어 실행 중 CDN에 의존하지 않습니다.</p>
+<h2>원본 코드 라이선스</h2><pre>MIT License
+
+Copyright (c) 2026 STEPPE contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</pre><p class="small">Three.js는 별도 MIT 저작권 고지를 보존합니다. 모델과 합성음은 예술적 표현이며 실제 차량의 성능·소리나 몽골 생활상을 정밀하게 재현한 자료가 아닙니다.</p>
+</main></body></html>
