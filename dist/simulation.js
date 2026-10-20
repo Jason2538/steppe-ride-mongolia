@@ -19,6 +19,11 @@ export function terrainY(x,s) {
 }
 export class RideSimulation {
   constructor() { this.s=80; this.offset=-1.75; this.v=0; this.distance=0; this.heading=0; this.lean=0; this.rpm=1200; this.gear=0; this.throttle=0; this.cruise=0; this.mode='tour'; this.assist=true; this.slip=0; this.recovery=0; this.recoveries=0; this.riskTime=0; }
+  vehicle='bike';
+  setVehicle(type){
+    if(!['bike','car'].includes(type))return;
+    this.vehicle=type;this.v=0;this.throttle=0;this.cruise=0;this.heading=0;this.lean=0;this.offset=-1.75;this.slip=0;this.riskTime=0;this.recovery=0;this.gear=0;this.rpm=type==='car'?850:1200;
+  }
   get maxSpeed(){ return (this.mode==='tour'?100:180)/3.6; }
   get surface(){ return Math.abs(this.offset)>3.65?'grass':'asphalt'; }
   recover(){this.offset=-1.75;this.heading=0;this.lean=0;this.v=Math.min(this.v,4);this.slip=0;this.riskTime=0;this.recovery=0;this.cruise=0;this.recoveries++;}
@@ -29,28 +34,29 @@ export class RideSimulation {
     const target=this.cruise?clamp((Math.min(this.cruise/3.6,this.maxSpeed)-this.v)*.6+.13,0,1):clamp(input.throttle||0,0,1);
     this.throttle+=(target-this.throttle)*(1-Math.exp(-dt*5));
     const grass=this.surface==='grass',grip=grass?.48:1;
-    let accel=this.throttle*(4.7-2.3*clamp(this.v/50,0,1))-.15-.00115*this.v*this.v-(grass?1.0:0)-brake*8.8*grip;
+    const car=this.vehicle==='car';
+    let accel=this.throttle*((car?3.6:4.7)-(car?1.5:2.3)*clamp(this.v/50,0,1))-.15-.00115*this.v*this.v-(grass?1.0:0)-brake*(car?8:8.8)*grip;
     // Cruise uses gentle engine braking on descents / after a lower target is selected.
     if(this.cruise&&this.v>this.cruise/3.6+.4)accel-=Math.min(3,(this.v-this.cruise/3.6)*1.5);
     accel-=9.81*(roadY(this.s+.5)-roadY(this.s-.5));
     this.v=clamp(this.v+accel*dt,0,Math.max(this.maxSpeed,this.v-3*dt));
     const roadTurn=roadCurve(this.s)*this.v;
-    let yawRate=steer*(.52/(1+this.v*.045));
+    let yawRate=steer*((car?.42:.52)/(1+this.v*(car?.05:.045)));
     if(this.assist&&Math.abs(steer)<.05)yawRate+=(-this.heading*1.8-clamp((this.offset+1.75)*.009,-.15,.15))+roadTurn;
     this.heading=clamp(this.heading+(yawRate-roadTurn)*dt,-.75,.75);
     const turnDemand=Math.abs(yawRate)*this.v;
-    const brakeDemand=brake*8.8*grip;
+    const brakeDemand=brake*(car?8:8.8)*grip;
     const combined=Math.hypot(turnDemand,brakeDemand)/(9.81*grip);
     this.slip+=(clamp((combined-.85)*1.1,0,1)-this.slip)*(1-Math.exp(-dt*6));
     this.offset+=Math.sin(this.heading)*this.v*dt;
     if(this.slip>.1)this.offset+=Math.sign(this.heading||yawRate||1)*this.slip*this.v*.035*dt;
     const ds=this.v*Math.cos(this.heading)*dt/Math.sqrt(1+roadSlope(this.s)**2);
     this.s+=ds;this.distance+=this.v*dt;
-    const leanTarget=-Math.atan(yawRate*this.v/9.81);
+    const leanTarget=Math.atan(yawRate*this.v/9.81)*(car?.13:-1);
     this.lean+=(clamp(leanTarget,-.78,.78)-this.lean)*(1-Math.exp(-dt*5));
     this.gear=this.v<.35?0:clamp(Math.floor(this.v*3.6/27)+1,1,6);
     const gearRatio=[0,2.8,1.9,1.45,1.18,1,.86][this.gear];
-    const rpmTarget=this.gear?clamp(1400+this.v*gearRatio*155+this.throttle*900,1400,9800):1200+this.throttle*3200;
+    const rpmTarget=car?(this.gear?clamp(850+this.v*gearRatio*85+this.throttle*500,900,6200):850+this.throttle*2300):(this.gear?clamp(1400+this.v*gearRatio*155+this.throttle*900,1400,9800):1200+this.throttle*3200);
     this.rpm+=(rpmTarget-this.rpm)*(1-Math.exp(-dt*9));
     this.riskTime=this.slip>.78&&this.v>17?this.riskTime+dt:Math.max(0,this.riskTime-dt*2);
     if(Math.abs(this.offset)>32||this.riskTime>1.35){this.recovery=1.15;this.cruise=0;}

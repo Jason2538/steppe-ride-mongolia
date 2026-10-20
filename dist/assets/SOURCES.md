@@ -11,6 +11,6 @@ Poly Haven 에셋 라이선스: https://polyhaven.com/license
 
 CC0: https://creativecommons.org/publicdomain/zero/1.0/
 
-국기는 국가 상징 자료로 사용하며 공식 기관의 승인·후원을 나타내지 않습니다. 하늘·재질은 몽골 현장을 실측·촬영한 자료라는 의미가 아닙니다. 염소·국기봉·천 geometry·풀·산맥·오토바이는 이 프로젝트에서 구성했습니다.
+국기는 국가 상징 자료로 사용하며 공식 기관의 승인·후원을 나타내지 않습니다. 하늘·재질은 몽골 현장을 실측·촬영한 자료라는 의미가 아닙니다. 염소·국기봉·천 geometry·풀·산맥·오토바이·자동차(차체·실내·짐 포함)는 이 프로젝트에서 구성했습니다. 원본 모델 코드는 MIT 라이선스입니다.
 
 원본 다운로드: `https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/<asset>/<asset>_<map>_1k.jpg`, `https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kloofendal_48d_partly_cloudy_puresky_1k.hdr`, `https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kloofendal_48d_partly_cloudy_puresky.jpg`, `https://upload.wikimedia.org/wikipedia/commons/4/4c/Flag_of_Mongolia.svg`.

@@ -22,7 +22,7 @@ export class RideAudio {
     if(!this.ctx)return;const t=this.ctx.currentTime;
     this.master.gain.setTargetAtTime(this.enabled&&active?.65:0,t,.12);
     for(const [osc,ratio] of this.oscillators)osc.frequency.setTargetAtTime(sim.rpm/60*ratio,t,.045);
-    this.filter.frequency.setTargetAtTime(250+sim.throttle*950+sim.rpm*.055,t,.08);
+    this.filter.frequency.setTargetAtTime((sim.vehicle==='car'?180:250)+sim.throttle*(sim.vehicle==='car'?600:950)+sim.rpm*.055,t,.08);
     this.engine.gain.setTargetAtTime(this.engineVolume*(.22+sim.throttle*.5),t,.08);
     this.wind.gain.setTargetAtTime(this.windVolume*Math.min(.8,Math.pow(sim.v/40,1.6)*.6),t,.15);
     this.windFilter.frequency.setTargetAtTime(100+sim.v*8,t,.15);

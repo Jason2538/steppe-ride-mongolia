@@ -4,20 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#edf0e4">
-  <meta name="description" content="몽골에서 영감을 받은 끝없는 초원 길. 나만의 속도로 즐기는 싱글 플레이 오토바이 여행.">
+  <meta name="description" content="몽골에서 영감을 받은 끝없는 초원 길. 오토바이와 자동차로 즐기는 싱글 플레이 여행.">
   <title>STEPPE — 길이 이끄는 대로</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css?v=1.2">
 </head>
 <body>
-  <canvas id="scene" aria-label="몽골에서 영감을 받은 초원 오토바이 주행 화면"></canvas>
+  <canvas id="scene" aria-label="몽골에서 영감을 받은 초원 차량 주행 화면"></canvas>
   <div id="vignette" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="./" aria-label="STEPPE 처음으로"><svg viewBox="0 0 38 28" aria-hidden="true"><path d="M2 23 13 8l6 8 7-12 10 19M13 8l3 15M26 4l-4 19"/></svg><span>STEPPE<small>THE OPEN ROAD</small></span></a>
     <div class="location"><span class="live-dot"></span> 몽골의 초원 <span class="divider">/</span> <span class="subtle">가상 여행</span></div>
     <nav class="tools" aria-label="게임 도구">
       <button id="soundToggle" class="icon-button" aria-label="소리 켜기" title="소리 켜기">♪</button>
-      <button id="cameraButton" class="icon-button" aria-label="카메라 전환" title="카메라 전환 · C"><svg viewBox="0 0 24 24"><path d="m3 7 5 0 2-3h4l2 3h5v13H3Z"/><circle cx="12" cy="13" r="4"/></svg></button>
       <button id="settingsButton" class="icon-button" aria-label="설정" title="설정"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></button>
       <button id="pauseButton" class="icon-button" aria-label="일시정지" title="일시정지 · P"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
     </nav>
@@ -27,7 +26,7 @@
     <div class="eyebrow"><span class="short-line"></span> A LITTLE FURTHER, A LITTLE FREER</div>
     <h1>길이 이끄는<br>대로<span>.</span></h1>
     <p class="intro">끝없이 펼쳐진 하늘, 바람이 지나는 초원.<br>서두를 필요 없이, 당신의 속도로 달려보세요.</p>
-    <div class="start-options"><label for="startMode">오늘의 주행</label><select id="startMode"><option value="tour">관광 모드 · 최대 100 km/h</option><option value="speed">스피드 모드 · 최대 180 km/h</option></select></div>
+    <div class="start-options"><div class="start-pair"><label for="startVehicle">함께할 차량</label><select id="startVehicle"><option value="bike">오토바이</option><option value="car">자동차 · 탐험 왜건</option></select></div><div class="start-pair"><label for="startMode">오늘의 주행</label><select id="startMode"><option value="tour">관광 · 최대 100 km/h</option><option value="speed">스피드 · 최대 180 km/h</option></select></div></div>
     <button id="startButton" class="primary">초원으로 출발 <span>↗</span></button>
     <div class="welcome-foot"><span>혼자 떠나는 여행</span><span>설치 없이 바로 주행</span></div>
     <div class="welcome-note">몽골에서 영감을 받은 가상의 길입니다.</div>
@@ -41,14 +40,13 @@
       <div class="speedline"><span id="speed">0</span><div class="speedunit">km/h<br><span>현재 속도</span></div><div class="gear"><small>GEAR</small><strong id="gear">N</strong></div></div>
       <div class="rpm-track"><div id="rpmFill"></div><span></span><span></span><span></span><span></span><span></span></div>
       <div class="rpm-label"><span><b id="rpm">1,200</b> RPM</span><span id="surface">아스팔트</span></div>
-      <div class="hud-bottom"><span>이동 거리 <b id="distance">0.00</b> km</span><span>린 <b id="lean">0</b>°</span></div>
+      <div class="hud-bottom"><span><b id="distance">0.00</b> km</span><span><span id="leanLabel">린</span> <b id="lean">0</b>°</span></div>
     </section>
     <section class="cruise" id="cruisePanel" aria-label="크루즈 컨트롤"><div class="cruise-heading"><span id="cruiseStatus">나만의 속도로</span><button id="cruiseOff" title="크루즈 해제">수동</button></div><div class="cruise-speeds"><button data-cruise="40">40</button><button data-cruise="60">60</button><button data-cruise="80">80</button><button data-cruise="100">100</button><small>km/h</small></div></section>
-    <div class="keyboard-help"><span><kbd>W</kbd><kbd>S</kbd> 가속 · 제동</span><span><kbd>A</kbd><kbd>D</kbd> 조향</span><span><kbd>C</kbd> 시점</span><span><kbd>P</kbd> 정지</span></div>
-    <aside class="route"><div class="route-head"><span>YOUR JOURNEY</span><span>↟ N</span></div><svg viewBox="0 0 180 65" aria-hidden="true"><path d="M-10 56C25 70 55 8 85 23S120 68 190 4" class="route-shadow"/><path d="M-10 56C25 70 55 8 85 23S120 68 190 4"/><circle cx="85" cy="23" r="5"/></svg><div><span>초원의 길</span><small>목적지 없이, 자유롭게</small></div></aside>
+    <div class="keyboard-help"><span>W/S 가속·제동</span><span>A/D 조향</span><span>V 차량</span><span>C 시점</span><span>P 정지</span></div>
     <div class="touch-controls"><div class="touch-steer"><button data-input="left" aria-label="왼쪽 조향">‹</button><button data-input="right" aria-label="오른쪽 조향">›</button></div><div class="touch-pedals"><button data-input="brake" aria-label="브레이크">제동</button><button data-input="throttle" class="throttle" aria-label="가속">가속 <span>↑</span></button></div></div>
   </div>
-  <div id="viewLabel" class="view-label hidden">3인칭 · 따라가기</div>
+  <div class="ride-switches" aria-label="차량과 카메라 선택"><label>차량<select id="vehicleSelect" title="차량 변경 · V"><option value="bike">오토바이</option><option value="car">자동차</option></select></label><label>시점<select id="cameraSelect" title="시점 전환 · C"><option value="0">뒤에서</option><option value="1">헬멧</option><option value="2">핸들바</option><option value="3">넓게</option></select></label></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="orientationHint" class="orientation-hint">↻ 가로로 돌리면 풍경이 더 넓게 보여요</div>
 
@@ -68,6 +66,6 @@
   </dialog>
   <dialog id="pauseDialog" class="pause-dialog"><span class="eyebrow">TAKE YOUR TIME</span><h2>잠시, 숨을 고르고.</h2><p>길은 여기서 기다리고 있어요.</p><button id="resumeButton" class="primary">다시 달리기 <span>→</span></button></dialog>
   <div id="error" class="error hidden" role="alert"><h2>3D 화면을 시작하지 못했어요.</h2><p id="errorText">브라우저의 하드웨어 가속과 WebGL2 지원을 확인해 주세요.</p><button onclick="location.reload()">다시 시도</button></div>
-  <script type="module" src="./game.js?v=1.1"></script>
+  <script type="module" src="./game.js?v=1.2"></script>
 </body>
 </html>
