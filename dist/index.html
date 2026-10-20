@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#edf0e4">
-  <meta name="description" content="몽골에서 영감을 받은 끝없는 초원 길. 오토바이와 자동차로 즐기는 싱글 플레이 여행.">
+  <meta name="description" content="몽골에서 영감을 받은 끝없는 초원과 사막, 호수 길. 오토바이와 자동차로 즐기는 싱글 플레이 여행.">
   <title>STEPPE — 길이 이끄는 대로</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./style.css?v=1.2">
+  <link rel="stylesheet" href="./style.css?v=1.3">
 </head>
 <body>
   <canvas id="scene" aria-label="몽골에서 영감을 받은 초원 차량 주행 화면"></canvas>
   <div id="vignette" aria-hidden="true"></div>
   <header class="topbar">
     <a class="brand" href="./" aria-label="STEPPE 처음으로"><svg viewBox="0 0 38 28" aria-hidden="true"><path d="M2 23 13 8l6 8 7-12 10 19M13 8l3 15M26 4l-4 19"/></svg><span>STEPPE<small>THE OPEN ROAD</small></span></a>
-    <div class="location"><span class="live-dot"></span> 몽골의 초원 <span class="divider">/</span> <span class="subtle">가상 여행</span></div>
+    <div class="location"><span class="live-dot"></span> <span id="biomeLabel">몽골의 초원</span> <span class="divider">/</span> <span class="subtle">가상 여행</span></div>
     <nav class="tools" aria-label="게임 도구">
       <button id="soundToggle" class="icon-button" aria-label="소리 켜기" title="소리 켜기">♪</button>
       <button id="settingsButton" class="icon-button" aria-label="설정" title="설정"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></button>
@@ -25,7 +25,7 @@
   <main id="welcome" class="welcome">
     <div class="eyebrow"><span class="short-line"></span> A LITTLE FURTHER, A LITTLE FREER</div>
     <h1>길이 이끄는<br>대로<span>.</span></h1>
-    <p class="intro">끝없이 펼쳐진 하늘, 바람이 지나는 초원.<br>서두를 필요 없이, 당신의 속도로 달려보세요.</p>
+    <p class="intro">끝없이 펼쳐진 하늘, 바람이 지나는 초원과 고비의 길.<br>서두를 필요 없이, 당신의 속도로 달려보세요.</p>
     <div class="start-options"><div class="start-pair"><label for="startVehicle">함께할 차량</label><select id="startVehicle"><option value="bike">오토바이</option><option value="car">자동차 · 탐험 왜건</option></select></div><div class="start-pair"><label for="startMode">오늘의 주행</label><select id="startMode"><option value="tour">관광 · 최대 100 km/h</option><option value="speed">스피드 · 최대 180 km/h</option></select></div></div>
     <button id="startButton" class="primary">초원으로 출발 <span>↗</span></button>
     <div class="welcome-foot"><span>혼자 떠나는 여행</span><span>설치 없이 바로 주행</span></div>
@@ -39,7 +39,7 @@
       <div class="hud-top"><span class="live-dot"></span><span id="modeLabel">관광 모드</span><span id="fps" class="fps"></span></div>
       <div class="speedline"><span id="speed">0</span><div class="speedunit">km/h<br><span>현재 속도</span></div><div class="gear"><small>GEAR</small><strong id="gear">N</strong></div></div>
       <div class="rpm-track"><div id="rpmFill"></div><span></span><span></span><span></span><span></span><span></span></div>
-      <div class="rpm-label"><span><b id="rpm">1,200</b> RPM</span><span id="surface">아스팔트</span></div>
+      <div class="rpm-label"><span><b id="rpm">1,200</b> RPM</span><span id="surface">포장도로</span></div>
       <div class="hud-bottom"><span><b id="distance">0.00</b> km</span><span><span id="leanLabel">린</span> <b id="lean">0</b>°</span></div>
     </section>
     <section class="cruise" id="cruisePanel" aria-label="크루즈 컨트롤"><div class="cruise-heading"><span id="cruiseStatus">나만의 속도로</span><button id="cruiseOff" title="크루즈 해제">수동</button></div><div class="cruise-speeds"><button data-cruise="40">40</button><button data-cruise="60">60</button><button data-cruise="80">80</button><button data-cruise="100">100</button><small>km/h</small></div></section>
@@ -52,7 +52,7 @@
 
   <dialog id="settingsDialog">
     <div class="dialog-head"><div><span class="eyebrow">MAKE IT YOURS</span><h2>여행 설정</h2></div><button class="close-button" data-close="settingsDialog" aria-label="설정 닫기">×</button></div>
-    <div class="setting"><label for="quality">그래픽 품질<small>느리게 느껴지면 낮음으로 바꿔보세요.</small></label><select id="quality"><option value="low">낮음</option><option value="medium" selected>중간</option><option value="high">높음</option></select></div>
+    <div class="setting"><label for="quality">그래픽 품질<small>PC 기본은 최상입니다. 느리게 느껴지면 단계를 낮춰보세요.</small></label><select id="quality"><option value="low">낮음</option><option value="medium">중간</option><option value="high">높음</option><option value="ultra" selected>최상</option></select></div>
     <div class="setting"><label for="rideMode">주행 모드</label><select id="rideMode"><option value="tour">관광 · 100 km/h</option><option value="speed">스피드 · 180 km/h</option></select></div>
     <div class="setting"><label for="hudToggle">계기판 표시</label><input id="hudToggle" type="checkbox" checked></div>
     <div class="setting"><label for="shakeToggle">노면·속도 진동</label><input id="shakeToggle" type="checkbox" checked></div>
@@ -66,6 +66,6 @@
   </dialog>
   <dialog id="pauseDialog" class="pause-dialog"><span class="eyebrow">TAKE YOUR TIME</span><h2>잠시, 숨을 고르고.</h2><p>길은 여기서 기다리고 있어요.</p><button id="resumeButton" class="primary">다시 달리기 <span>→</span></button></dialog>
   <div id="error" class="error hidden" role="alert"><h2>3D 화면을 시작하지 못했어요.</h2><p id="errorText">브라우저의 하드웨어 가속과 WebGL2 지원을 확인해 주세요.</p><button onclick="location.reload()">다시 시도</button></div>
-  <script type="module" src="./game.js?v=1.2"></script>
+  <script type="module" src="./game.js?v=1.3"></script>
 </body>
 </html>

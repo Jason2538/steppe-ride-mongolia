@@ -1,5 +1,4 @@
-.env*
 node_modules/
 *.tar.gz
 *.zip
-.openai/sites-runtime.json
+.DS_Store
