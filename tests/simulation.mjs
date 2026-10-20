@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {RideSimulation,roadX,roadY,terrainY} from '../dist/simulation.js';
+import {terrainSurfaceY} from '../dist/world.js';
 const step=(sim,seconds,input={})=>{for(let i=0;i<seconds*60;i++)sim.update(1/60,input);};
 const sim=new RideSimulation();step(sim,5,{throttle:1});assert(sim.v>5&&sim.v<25,'Acceleration must be gradual');
 const before=sim.v;step(sim,1);assert(sim.v<before&&sim.v>0,'Coasting retains momentum');
@@ -14,4 +15,6 @@ for(const v of Object.values(long))if(typeof v==='number')assert(Number.isFinite
 const recovery=new RideSimulation();recovery.offset=40;recovery.v=20;step(recovery,2);assert.equal(recovery.recoveries,1);assert(Math.abs(recovery.offset)<4,'Recovery returns to lane');
 const steer=new RideSimulation();steer.v=15;step(steer,.5,{steer:1});assert(steer.offset>-1.75,'Left steering moves left in world coordinates');assert(steer.lean<0,'Steering produces lean');
 for(const s of [0,239.999,240,1999.999,2000,1000000]){assert(Number.isFinite(terrainY(roadX(s),s)));assert(Math.abs(terrainY(roadX(s),s)-(roadY(s)-.16))<1e-8,'Road terrain matches across chunks');}
-console.log('PASS: acceleration, inertia, cruise, braking, modes, 1-hour ride, recovery, steering/lean, road continuity.');
+for(const s of [-240,0,112.5,240,1995,2002.5,1000050])for(const d of [-18,-10,6,10,18])assert(Math.abs(terrainSurfaceY(roadX(s)+d,s)-terrainY(roadX(s)+d,s))<1e-7,'Prop placement matches terrain vertices');
+for(const s of [240,480,720])assert(Math.abs(terrainSurfaceY(roadX(s-.001)+12,s-.001)-terrainSurfaceY(roadX(s+.001)+12,s+.001))<.05,'Prop surface is continuous across chunks');
+console.log('PASS: acceleration, inertia, cruise, braking, modes, 1-hour ride, recovery, steering/lean, road continuity, prop-ground contact.');

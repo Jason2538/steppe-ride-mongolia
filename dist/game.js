@@ -1,13 +1,14 @@
 import * as T from './vendor/three.module.js';
 import {RideSimulation,clamp,roadX,roadY,roadSlope,terrainY} from './simulation.js';
-import {SteppeWorld,QUALITY} from './world.js';
-import {createBike} from './bike.js';
+import {SteppeWorld,QUALITY} from './world.js?v=1.1';
+import {createBike} from './bike.js?v=1.1';
 import {RideAudio} from './audio.js';
 
 const $=id=>document.getElementById(id),sim=new RideSimulation(),audio=new RideAudio();
 const keys=new Set(),touch={left:0,right:0,throttle:0,brake:0};
 let renderer,scene,camera,world,bike,sun,started=false,paused=false,view=0,last=performance.now(),accumulator=0,uiTimer=0,fpsFrames=0,fpsElapsed=0,fps=60,previousRecoveries=0,toastTimer;
 let previousOrigin=0,shake=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+let sceneryTime=0;
 const cameraPosition=new T.Vector3(),cameraTarget=new T.Vector3(),lookAt=new T.Vector3(),bikePosition=new T.Vector3();
 const viewNames=['3인칭 · 따라가기','1인칭 · 헬멧','핸들바 시점','넓게 보기'];
 const config={quality:matchMedia('(pointer:coarse)').matches?'low':'medium'};
@@ -40,19 +41,19 @@ function init(){
   loadSettings();
   renderer=new T.WebGLRenderer({canvas:$('scene'),antialias:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1,QUALITY[config.quality].pixel));renderer.setSize(innerWidth,innerHeight,false);
-  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
+  renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.06;
   renderer.shadowMap.enabled=!!QUALITY[config.quality].shadow;renderer.shadowMap.type=T.PCFSoftShadowMap;
-  scene=new T.Scene();scene.background=new T.Color(0xc6d4bf);scene.fog=new T.FogExp2(0xc4d0b9,.00048);
+  scene=new T.Scene();scene.background=new T.Color(0xcbdce5);scene.fog=new T.FogExp2(0xc1d3de,.00017);
   camera=new T.PerspectiveCamera(58,innerWidth/innerHeight,.12,10000);
-  scene.add(new T.HemisphereLight(0xe2eef0,0x7a804c,2.1));
-  sun=new T.DirectionalLight(0xffe7bb,2.5);sun.castShadow=true;sun.shadow.mapSize.setScalar(QUALITY[config.quality].shadow||512);sun.shadow.camera.left=-35;sun.shadow.camera.right=35;sun.shadow.camera.top=35;sun.shadow.camera.bottom=-35;sun.shadow.camera.near=1;sun.shadow.camera.far=650;sun.shadow.bias=-.0003;sun.shadow.normalBias=.06;scene.add(sun,sun.target);
-  world=new SteppeWorld(scene,config.quality);world.warmup(sim.s);
+  scene.add(new T.HemisphereLight(0xcbdfe8,0x6b694c,1.05));
+  sun=new T.DirectionalLight(0xffedce,2.7);sun.castShadow=true;sun.shadow.mapSize.setScalar(QUALITY[config.quality].shadow||512);sun.shadow.camera.left=-42;sun.shadow.camera.right=42;sun.shadow.camera.top=42;sun.shadow.camera.bottom=-42;sun.shadow.camera.near=1;sun.shadow.camera.far=650;sun.shadow.bias=-.0003;sun.shadow.normalBias=.035;scene.add(sun,sun.target);
+  world=new SteppeWorld(scene,config.quality,renderer);world.warmup(sim.s);
   bike=createBike();scene.add(bike.root);
   $('quality').value=config.quality;$('shakeToggle').checked=shake;$('assistToggle').checked=sim.assist;$('engineVolume').value=audio.engineVolume*100;$('windVolume').value=audio.windVolume*100;
   setMode(sim.mode);document.body.classList.toggle('hud-off',!$('hudToggle').checked);updateSoundButton();updateCruise();
   positionScene(1,true);renderer.render(scene,camera);last=performance.now();requestAnimationFrame(frame);
   // Read-only diagnostics help repeatable QA without affecting gameplay.
-  window.steppe={getState:()=>({started,paused,speed:sim.v*3.6,distance:sim.distance,gear:sim.gear,rpm:sim.rpm,s:sim.s,offset:sim.offset,cruise:sim.cruise,mode:sim.mode,view,quality:config.quality,chunks:world.chunks.size,created:world.stats.created,disposed:world.stats.disposed,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,fps,recoveries:sim.recoveries,surface:sim.surface}),version:'1.0.0'};
+  window.steppe={getState:()=>({started,paused,speed:sim.v*3.6,distance:sim.distance,gear:sim.gear,rpm:sim.rpm,s:sim.s,offset:sim.offset,cruise:sim.cruise,mode:sim.mode,view,quality:config.quality,chunks:world.chunks.size,created:world.stats.created,disposed:world.stats.disposed,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,fps,recoveries:sim.recoveries,surface:sim.surface}),version:'1.1.0'};
 }
 function readInput(){
   let steer=(keys.has('KeyA')||keys.has('ArrowLeft')?1:0)-(keys.has('KeyD')||keys.has('ArrowRight')?1:0)+touch.left-touch.right+dragSteer;
@@ -74,14 +75,14 @@ function positionScene(dt,instant=false){
   bike.rider.visible=view===0||view===3||!started;
   const sx=Math.sin(heading),cz=Math.cos(heading);
   if(!started){cameraPosition.set(bx+9,by+4.7,bz-origin-13);cameraTarget.set(bx+3,by+1.7,bz-origin+22);}
-  else if(view===0){cameraPosition.set(bx-sx*8.2,by+3.35+bump,bz-origin-cz*8.2);cameraTarget.set(bx+sx*13,by+1.15,bz-origin+cz*13);}
+  else if(view===0){cameraPosition.set(bx-sx*6.5,by+2.65+bump,bz-origin-cz*6.5);cameraTarget.set(bx+sx*13,by+1.15,bz-origin+cz*13);}
   else if(view===1){cameraPosition.set(bx+sx*.05,by+1.96+bump,bz-origin+cz*.05);cameraTarget.set(bx+sx*40,by+1.6,bz-origin+cz*40);}
   else if(view===2){cameraPosition.set(bx+sx*.22,by+1.49+bump,bz-origin+cz*.22);cameraTarget.set(bx+sx*35,by+1.3,bz-origin+cz*35);}
   else{cameraPosition.set(bx-sx*15+Math.cos(heading)*7,by+7,bz-origin-cz*15-Math.sin(heading)*7);cameraTarget.set(bx+sx*17,by+1.2,bz-origin+cz*17);}
   if(started&&shake&&!paused){const amount=sim.v/50*.01;cameraPosition.x+=Math.sin(sim.distance*1.7)*amount;cameraPosition.y+=Math.sin(sim.distance*3)*amount;}
   const blend=instant?1:1-Math.exp(-dt*(view===0||view===3?5:16));camera.position.lerp(cameraPosition,blend);lookAt.lerp(cameraTarget,blend);camera.lookAt(lookAt);
   const fov=58+(started?clamp(sim.v/50,0,1)*5:0);if(Math.abs(camera.fov-fov)>.05){camera.fov=fov;camera.updateProjectionMatrix();}
-  world.update(sim.s,camera);
+  world.update(sim.s,camera,sceneryTime);
   sun.position.set(bx-170,by+270,bz-origin+180);sun.target.position.set(bx,by,bz-origin+15);
 }
 function updateUI(){
@@ -89,11 +90,13 @@ function updateUI(){
   $('distance').textContent=(sim.distance/1000).toFixed(2);$('lean').textContent=Math.round(Math.abs(sim.lean)*180/Math.PI);$('surface').textContent=sim.surface==='grass'?'초지 · 낮은 접지력':'아스팔트';
   $('fps').textContent=$('fpsToggle').checked?`${Math.round(fps)} FPS`:'';
   $('fps').dataset.chunks=world.chunks.size;$('fps').dataset.created=world.stats.created;$('fps').dataset.disposed=world.stats.disposed;$('fps').dataset.geometries=renderer.info.memory.geometries;$('fps').dataset.drawCalls=renderer.info.render.calls;
+  $('fps').dataset.flags=[...world.chunks.values()].reduce((n,c)=>n+(c.userData.flags?.length||0),0);$('fps').dataset.goats=[...world.chunks.values()].reduce((n,c)=>n+(c.userData.goats?.length||0),0);
   if(sim.recovery>0)$('surface').textContent='자세를 회복하고 있어요';
   updateCruise();
 }
 function frame(now){
   const elapsed=Math.min((now-last)/1000,.1);last=now;fpsFrames++;fpsElapsed+=elapsed;
+  if(!paused)sceneryTime+=elapsed;
   if(fpsElapsed>=1){fps=fpsFrames/fpsElapsed;fpsFrames=0;fpsElapsed=0;}
   if(started&&!paused){accumulator+=elapsed;const input=readInput();while(accumulator>=1/60){sim.update(1/60,input);accumulator-=1/60;}
     if(sim.recoveries!==previousRecoveries){previousRecoveries=sim.recoveries;toast('괜찮아요. 도로로 돌아왔습니다.');}

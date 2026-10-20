@@ -66,7 +66,7 @@ Three.js 인스턴싱 근거: https://threejs.org/docs/pages/InstancedMesh.html
 
 Rapier 대안: https://rapier.rs/docs/user_guides/javascript/vehicle_controller/ — 차체 강체와 레이캐스트 바퀴 컨트롤러를 제공하지만 오토바이의 균형·린 모델은 별도로 만들어야 합니다. 초기에는 라이브러리 자체보다 주행 감각을 먼저 검증하기 위해 자체 경량 계산을 사용했습니다. 충돌과 서스펜션 요구가 늘면 Rapier/Cannon-es/Babylon-Havok을 다시 비교합니다. 이번 구현에 이 물리 라이브러리들을 포함하지 않았습니다.
 
-최적화: 지형 정밀도는 길 주변에 집중, 동일 풀·돌은 인스턴싱, 청크 밖 geometry와 임시 material 해제, 공유 geometry/material 재사용, 2km마다 원점 재배치, 카메라 원점도 동기화, 매 프레임 HUD 갱신 대신 10Hz, 물리 60Hz와 렌더링 분리, 화면 해상도 상한. 품질별 pixel ratio 상한은 1/1.4/1.8입니다. 모바일 첫 실행은 낮음이며 설정을 저장하면 해당 값을 사용합니다.
+최적화: 지형 정밀도는 길 주변에 집중, 동일 풀·돌은 인스턴싱, 청크 밖 geometry와 임시 material 해제, 공유 geometry/material 재사용, 2km마다 원점 재배치, 카메라 원점도 동기화, 매 프레임 HUD 갱신 대신 10Hz, 물리 60Hz와 렌더링 분리, 화면 해상도 상한. 1.1 버전 품질별 pixel ratio 상한은 1/1.5/2입니다. 모바일 첫 실행은 낮음이며 설정을 저장하면 해당 값을 사용합니다.
 
 ## 4. MVP 범위
 
@@ -99,7 +99,7 @@ SRTM 약 30m 자료는 EarthExplorer에서 지역을 선택해 받을 수 있습
 
 | 자료 후보 | 용도 | 조건 | 이번 버전 사용 여부 |
 |---|---|---|---|
-| Poly Haven | 재질·하늘·모델 | CC0, 상업 이용, 크레딧 의무 없음. 에셋과 API 이용 조건은 구분 | 미사용 |
+| Poly Haven | 재질·하늘·모델 | CC0, 상업 이용, 크레딧 의무 없음. 에셋과 API 이용 조건은 구분 | 1.1부터 Sparse Grass·Asphalt 02·Kloofendal 하늘 사용 |
 | ambientCG | 아스팔트·초지·모래 | CC0, 게임에 원본 포함 가능 | 미사용 |
 | Quaternius | 동물·환경 모델 | 현재 QAL 페이지와 FAQ의 CC0 안내 차이. 다운로드할 팩·버전의 조건 확인 | 미사용 |
 | Sketchfab | 개별 모델 | CC0 또는 CC BY만 우선 검토. CC BY 표기 의무, NC 제외 | 미사용 |

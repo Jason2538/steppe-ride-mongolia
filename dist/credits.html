@@ -1,11 +1,15 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>STEPPE · 제작 정보와 라이선스</title><style>body{margin:0;background:#f3f2e8;color:#2c4433;font:15px/1.85 Arial,'Malgun Gothic',sans-serif}main{max-width:900px;margin:auto;padding:50px 24px}h1{font:42px Georgia,serif;letter-spacing:4px}h2{font-size:20px;margin-top:40px}a{color:#42633e}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid #d3d9c6;padding:12px;text-align:left}pre{white-space:pre-wrap;background:#e7eadb;padding:20px;font-size:11px}.small{font-size:12px;color:#687b5d}@media(max-width:600px){table{font-size:11px}td,th{padding:8px}}</style></head><body><main>
-<a href="./">← 초원으로 돌아가기</a><h1>STEPPE</h1><p>몽골에서 영감을 받은 싱글 플레이 오픈 로드 라이딩 · MVP 1.0</p>
-<p>이 게임의 도로와 풍경은 수학식으로 생성한 가상 환경입니다. 실제 몽골의 특정 장소·도로를 재현한 지도는 아닙니다. 실제 위성 지형 데이터, 외부 사진, 상용 오토바이 디자인이나 녹음 음원은 사용하지 않았습니다.</p>
+<a href="./">← 초원으로 돌아가기</a><h1>STEPPE</h1><p>몽골에서 영감을 받은 싱글 플레이 오픈 로드 라이딩 · 그래픽 업데이트 1.1</p>
+<p>도로와 지형은 수학식으로 생성한 가상 환경입니다. 실제 몽골의 특정 장소·도로를 재현한 지도는 아닙니다. 이번 버전부터 무료 사진 기반 재질과 하늘, 몽골 국기 SVG를 사용합니다. 하늘 자료는 몽골에서 촬영한 사진이 아닙니다. 실제 위성 지형 데이터, 상용 오토바이 디자인이나 외부 녹음 음원은 사용하지 않았습니다.</p>
 <h2>실제로 사용한 자료</h2><table><thead><tr><th>자료</th><th>출처·제작 방식</th><th>라이선스</th></tr></thead><tbody>
-<tr><td>Three.js 0.180.0</td><td><a href="https://github.com/mrdoob/three.js/tree/r180">Three.js 공식 프로젝트</a> · npm 패키지의 배포 파일을 로컬에 포함</td><td>MIT · <a href="./vendor/THREE-LICENSE.txt">원문</a></td></tr>
-<tr><td>지형·도로·하늘·구름</td><td>이 프로젝트에서 절차적으로 생성. DEM 미사용</td><td>프로젝트 원본 코드 · MIT</td></tr>
-<tr><td>오토바이·라이더·게르·양·전신주</td><td>기본 3D 도형을 조합해 직접 구성한 모델</td><td>프로젝트 원본 코드 · MIT</td></tr>
-<tr><td>초지·흙·아스팔트 텍스처</td><td>Canvas와 수학적 노이즈로 직접 생성</td><td>프로젝트 원본 코드 · MIT</td></tr>
+<tr><td>Three.js 0.180.0 · HDRLoader</td><td><a href="https://github.com/mrdoob/three.js/tree/r180">Three.js 공식 프로젝트</a> · HDRLoader는 로컬 모듈 경로로 수정</td><td>MIT · <a href="./vendor/THREE-LICENSE.txt">원문</a></td></tr>
+<tr><td>Sparse Grass · 색상/노멀</td><td><a href="https://polyhaven.com/a/sparse_grass">Amal Kumar / Poly Haven</a> · 1K JPEG 재압축, 게임 셰이더에서 색감 조절</td><td><a href="https://polyhaven.com/license">CC0 1.0</a></td></tr>
+<tr><td>Asphalt 02 · 색상/노멀</td><td><a href="https://polyhaven.com/a/asphalt_02">Rob Tuytel / Poly Haven</a> · 1K JPEG 재압축</td><td>CC0 1.0</td></tr>
+<tr><td>Kloofendal 48d Partly Cloudy (Pure Sky)</td><td><a href="https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky">Greg Zaal, Jarod Guest / Poly Haven</a> · 배경은 4K JPEG로 축소·재압축, 반사는 1K HDR</td><td>CC0 1.0</td></tr>
+<tr><td>몽골 국기 SVG</td><td><a href="https://commons.wikimedia.org/wiki/File:Flag_of_Mongolia.svg">Wikimedia Commons, Flag of Mongolia.svg</a> · 문서의 파일 이력 참고. 소욤보 문양 포함 원본을 3D 천에 적용</td><td>Public Domain · 원문 페이지 PD-Mongolia-exempt 고지</td></tr>
+<tr><td>지형·도로·산맥·대체 하늘</td><td>이 프로젝트에서 절차적으로 생성. DEM 미사용</td><td>프로젝트 원본 코드 · MIT</td></tr>
+<tr><td>오토바이·라이더·게르·양·염소·풀잎·전신주</td><td>직접 구성한 3D 모델. 염소 고개·국기 천·풀의 움직임을 코드로 구현</td><td>프로젝트 원본 코드 · MIT</td></tr>
+<tr><td>흙·털 요철·대체 재질</td><td>Canvas와 수학적 노이즈로 직접 생성</td><td>프로젝트 원본 코드 · MIT</td></tr>
 <tr><td>엔진음·바람음</td><td>Web Audio 발진기와 노이즈로 합성. 외부 녹음·음악 미사용</td><td>프로젝트 원본 코드 · MIT</td></tr>
 <tr><td>아이콘·로고</td><td>이 프로젝트의 SVG와 기본 문자</td><td>프로젝트 원본 코드 · MIT</td></tr>
 <tr><td>글꼴</td><td>기기에 설치된 시스템 글꼴 사용. 폰트 파일 미배포</td><td>각 운영체제 제공 글꼴</td></tr>
